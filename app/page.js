@@ -2,58 +2,25 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, Heart, Sun, Moon, Volume2, VolumeX, Lamp, Rocket, Send, MessageSquare, User, Wrench, BookOpen, Bot, Sparkle } from 'lucide-react';
+import { 
+  Sparkles, Heart, Sun, Moon, Volume2, VolumeX, 
+  MessageCircle, Briefcase, Wand2, BookOpen, Send, X, Lamp, Music, Rocket, Blocks, Ruler
+} from 'lucide-react';
 
-export default function UltimatePipPortfolio() {
+export default function PipCleanSidebarOS() {
   const [isMuted, setIsMuted] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
   const [lanternBrightness, setLanternBrightness] = useState(85);
-  const [activeModal, setActiveModal] = useState(null);
-  const [activeScene, setActiveScene] = useState(0);
+  const [activeSidebarTab, setActiveSidebarTab] = useState(null); // 'chat' | 'inventions' | 'portfolio' | 'story'
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
+  const [visitorCount] = useState(1337);
 
-  // Tier 3: Returning Visitor Memory (LocalStorage)
-  const [visitorName, setVisitorName] = useState('');
-  const [isReturningVisitor, setIsReturningVisitor] = useState(false);
-
-  // Tier 3: Rule-Based Pip AI Chat Bot State
-  const [chatInput, setChatInput] = useState('');
+  // Pre-configured Chat State (3 fixed option choices)
   const [chatHistory, setChatHistory] = useState([
-    { sender: 'pip', text: "Yawn... Hi friend! I'm Pip! Ask me about my dreams, nightlights, or lullabies! 🌙" }
+    { sender: 'pip', text: "Yawn... Hi friend! I'm Pip! Tap one of the questions below to talk to me! 🌙" }
   ]);
 
-  // MongoDB Live Guestbook State
-  const [messages, setMessages] = useState([]);
-  const [guestName, setGuestName] = useState('');
-  const [guestNote, setGuestNote] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const avatarRef = useRef(null);
-
-  // Check returning visitor memory on load
-  useEffect(() => {
-    const savedName = localStorage.getItem('pip_visitor_name');
-    if (savedName) {
-      setVisitorName(savedName);
-      setIsReturningVisitor(true);
-    }
-    fetchGuestbook();
-  }, []);
-
-  const saveVisitorName = (name) => {
-    localStorage.setItem('pip_visitor_name', name);
-    setVisitorName(name);
-    setIsReturningVisitor(true);
-  };
-
-  const fetchGuestbook = async () => {
-    try {
-      const res = await fetch('/api/guestbook');
-      const json = await res.json();
-      if (json.success) setMessages(json.data);
-    } catch (err) {
-      console.log('Guestbook error:', err);
-    }
-  };
 
   // Web Audio API Synthesizer
   const playPop = (freq = 523.25) => {
@@ -77,7 +44,7 @@ export default function UltimatePipPortfolio() {
       osc.start();
       osc.stop(ctx.currentTime + 0.25);
     } catch (e) {
-      console.log(e);
+      console.log('Audio error:', e);
     }
   };
 
@@ -102,7 +69,7 @@ export default function UltimatePipPortfolio() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Easter Egg Trigger
+  // Easter Egg Confetti Trigger
   const triggerEasterEgg = () => {
     playPop(880);
     confetti({
@@ -113,82 +80,30 @@ export default function UltimatePipPortfolio() {
     });
   };
 
-  // Pip Chat Dialogue Logic
-  const handleChatSubmit = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-
-    const userMsg = chatInput.trim();
-    setChatHistory((prev) => [...prev, { sender: 'user', text: userMsg }]);
-    setChatInput('');
+  // Handle Fixed Chat Questions
+  const handleAskPip = (questionType) => {
     playPop(659.25);
+    let userText = "";
+    let pipReply = "";
 
-    setTimeout(() => {
-      let pipReply = "I love quiet night skies and gentle melodies! 🌟";
-      const query = userMsg.toLowerCase();
+    if (questionType === 'who') {
+      userText = "Who is Pip?";
+      pipReply = "Name: Pip | Species: Cute Skull Baby. I have a smooth, round skull face, huge soft eye sockets with cozy glowing pinpricks of light, a tiny crooked smile, and a starry nightcap with a pink bow! Personality: Curious, sleepy, clumsy, easily delighted. I giggle at everything and hate silence! 🎀";
+    } else if (questionType === 'what') {
+      userText = "What does Pip do?";
+      pipReply = "Profession: Junior Dream Engineer at Midnight Nursery! I design the dreams, lullabies, nightlights, and bedtime stories that help the neighborhood's little ghosts and creatures fall asleep peacefully! 🌙";
+    } else if (questionType === 'tagline') {
+      userText = "What is Pip's tagline?";
+      pipReply = "✨ \"I build the dreams you fall asleep inside.\" ✨";
+    }
 
-      if (query.includes('hello') || query.includes('hi')) {
-        pipReply = `Welcome back ${visitorName || 'friend'}! Ready to build cozy dreams together? 🎀`;
-      } else if (query.includes('lullaby') || query.includes('music')) {
-        pipReply = "My Lullaby Box uses soft wooden chimes to tune pentatonic sleep scales! 🎵";
-      } else if (query.includes('lantern') || query.includes('light')) {
-        pipReply = "My bedside lanterns use warm amber filaments so night monsters run away! 💡";
-      } else if (query.includes('who') || query.includes('pip')) {
-        pipReply = "I'm Pip! Junior Dream Engineer at Midnight Nursery! 🌙";
-      }
-
-      setChatHistory((prev) => [...prev, { sender: 'pip', text: pipReply }]);
-      playPop(880);
-    }, 600);
-  };
-
-  // MongoDB Guestbook Submit
-  const handleGuestSubmit = async (e) => {
-    e.preventDefault();
-    if (!guestName || !guestNote || isSubmitting) return;
-
-    setIsSubmitting(true);
+    setChatHistory((prev) => [
+      ...prev,
+      { sender: 'user', text: userText },
+      { sender: 'pip', text: pipReply }
+    ]);
     playPop(880);
-    saveVisitorName(guestName);
-
-    try {
-      const res = await fetch('/api/guestbook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: guestName, note: guestNote }),
-      });
-
-      const json = await res.json();
-      if (json.success) {
-        setGuestName('');
-        setGuestNote('');
-        fetchGuestbook();
-      }
-    } catch (err) {
-      console.log('Error submitting signature:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
-
-  // Bedtime Story Scenes
-  const storyScenes = [
-    {
-      title: "Scene 1: Born in Midnight Nursery",
-      text: "Deep inside the cozy Midnight Nursery, Pip was born under a starry sky. Wearing a starry nightcap tied with a pink bow, Pip discovered glowing amber eyes that turn scary dark shadows into warm nightlights.",
-      bg: "from-[#a34063] to-[#5c4033]"
-    },
-    {
-      title: "Scene 2: Crafting the First Lullaby",
-      text: "When forest creatures couldn't sleep, Pip constructed the first Lullaby Music Box from wooden blocks and starlight chime strings. Every gentle crank lulled sleeping bear cubs into sweet dreams.",
-      bg: "from-[#8b3252] to-[#4a2a38]"
-    },
-    {
-      title: "Scene 3: Junior Dream Engineer",
-      text: "Today, Pip works officially as Junior Dream Engineer! Mapping starry flight routes every night, Pip delivers custom dreams and cozy lanterns to nurseries everywhere. Good things start small!",
-      bg: "from-[#a34063] to-[#8b3252]"
-    }
-  ];
 
   return (
     <div
@@ -196,7 +111,7 @@ export default function UltimatePipPortfolio() {
         isNightMode ? 'bg-[#1c121e] text-[#fff8f1]' : 'bg-[#fff8f1] text-[#5c4033]'
       }`}
     >
-      {/* Top Navbar */}
+      {/* Top Header */}
       <header className="p-6 max-w-5xl mx-auto flex justify-between items-center relative z-20 border-b border-[#a34063]/15">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-[#a34063] text-white flex items-center justify-center font-bold text-lg shadow-sm">
@@ -206,7 +121,7 @@ export default function UltimatePipPortfolio() {
             <h1 className="font-serif font-black text-2xl tracking-tight text-[#a34063]">
               Pip's Nursery
             </h1>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#a34063]/70">haX.baby Track 1</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#a34063]/70">haX.baby Official Portfolio</span>
           </div>
         </div>
 
@@ -232,25 +147,66 @@ export default function UltimatePipPortfolio() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8 flex flex-col items-center text-center relative z-10">
-        
-        {/* Tier 3: Returning Visitor Memory Greeting */}
-        {isReturningVisitor && (
-          <div className="mb-3 px-4 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold text-xs shadow-xs animate-pulse">
-            ✨ Welcome back, {visitorName}! Pip remembered your visit!
-          </div>
-        )}
+      {/* FIXED FLOATING CYLINDER SIDEBAR */}
+      <aside className="fixed left-4 top-1/2 -translate-y-1/2 z-40 bg-white/90 backdrop-blur-md border-2 border-[#a34063]/30 shadow-xl rounded-full p-2 flex flex-col gap-4 items-center">
+        {/* Chat Option */}
+        <button
+          onClick={() => { playPop(523.25); setActiveSidebarTab('chat'); }}
+          className={`p-3 rounded-full transition-all ${
+            activeSidebarTab === 'chat' ? 'bg-[#a34063] text-white scale-110' : 'text-[#a34063] hover:bg-[#a34063]/10'
+          }`}
+          title="Chat with Pip"
+        >
+          <MessageCircle className="w-5 h-5" />
+        </button>
 
+        {/* Inventions Option */}
+        <button
+          onClick={() => { playPop(659.25); setActiveSidebarTab('inventions'); }}
+          className={`p-3 rounded-full transition-all ${
+            activeSidebarTab === 'inventions' ? 'bg-[#a34063] text-white scale-110' : 'text-[#a34063] hover:bg-[#a34063]/10'
+          }`}
+          title="Pip's Inventions"
+        >
+          <Wand2 className="w-5 h-5" />
+        </button>
+
+        {/* Portfolio Option */}
+        <button
+          onClick={() => { playPop(783.99); setActiveSidebarTab('portfolio'); }}
+          className={`p-3 rounded-full transition-all ${
+            activeSidebarTab === 'portfolio' ? 'bg-[#a34063] text-white scale-110' : 'text-[#a34063] hover:bg-[#a34063]/10'
+          }`}
+          title="Pip's Portfolio Works"
+        >
+          <Briefcase className="w-5 h-5" />
+        </button>
+
+        {/* Origin Story Option */}
+        <button
+          onClick={() => { playPop(880); setActiveSidebarTab('story'); }}
+          className={`p-3 rounded-full transition-all ${
+            activeSidebarTab === 'story' ? 'bg-[#a34063] text-white scale-110' : 'text-[#a34063] hover:bg-[#a34063]/10'
+          }`}
+          title="Pip's Origin & World"
+        >
+          <BookOpen className="w-5 h-5" />
+        </button>
+      </aside>
+
+      {/* CLEAN MAIN STAGE */}
+      <main className="max-w-3xl mx-auto px-4 py-12 flex flex-col items-center text-center relative z-10">
+        
         <div className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a34063]/10 border border-[#a34063]/30 text-[#a34063] font-bold text-xs shadow-xs">
-          <Sparkles className="w-4 h-4" /> Good things start small.
+          <Sparkles className="w-4 h-4" /> "I build the dreams you fall asleep inside."
         </div>
 
         {/* Hero Character Stage */}
         <div
           ref={avatarRef}
-          className="relative w-60 h-60 sm:w-68 sm:h-68 my-4 rounded-full p-4 bg-white border-4 border-[#a34063] shadow-xl flex items-center justify-center hover:scale-105 transition-transform animate-bounce-slow"
+          className="relative w-64 h-64 sm:w-72 sm:h-72 my-6 rounded-full p-4 bg-white border-4 border-[#a34063] shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
         >
+          {/* Easter Egg Ribbon */}
           <button
             onClick={triggerEasterEgg}
             className="absolute -top-3 bg-[#a34063] text-white font-bold text-xs px-4 py-1.5 rounded-full shadow-md border-2 border-white hover:scale-110 active:scale-90 transition-all cursor-pointer z-20"
@@ -274,215 +230,164 @@ export default function UltimatePipPortfolio() {
           Pip The Skull Baby
         </h2>
 
-        <p className="inline-block bg-[#a34063]/10 border border-[#a34063]/20 font-bold text-[#a34063] px-4 py-1.5 rounded-full text-xs sm:text-sm mb-4">
+        <p className="inline-block bg-[#a34063]/10 border border-[#a34063]/20 font-bold text-[#a34063] px-4 py-1.5 rounded-full text-xs sm:text-sm mb-6">
           🌙 Junior Dream Engineer @ Midnight Nursery
         </p>
 
-        <p className="max-w-lg text-sm sm:text-base font-medium opacity-90 leading-relaxed mb-6">
-          A gentle, sleepy creature with a smooth round skull face, soft eye sockets with glowing warm amber pinpricks, and a bedtime nightcap with stars and a pink bow.
+        <p className="max-w-md text-sm sm:text-base font-medium opacity-90 leading-relaxed mb-8">
+          Welcome to Pip's cozy space! Tap the icons in the sidebar to chat with Pip, view inventions, open the portfolio, or discover Pip's origin story!
         </p>
 
-        {/* Tier 3 Feature: Live Character AI Chat Bot */}
-        <section className="w-full p-6 rounded-3xl bg-white border-2 border-[#a34063]/20 shadow-xs mb-10 text-left">
-          <div className="flex items-center gap-2 mb-3">
-            <Bot className="w-5 h-5 text-[#a34063]" />
-            <h3 className="font-serif text-xl font-bold text-[#a34063]">Chat With Pip (Tier 3 Boss Feature)</h3>
+        <div className="p-3 rounded-2xl bg-white border border-[#a34063]/20 shadow-xs inline-flex items-center gap-3">
+          <Heart className="w-5 h-5 text-[#a34063] fill-[#a34063] animate-pulse" />
+          <span className="text-xs font-black uppercase tracking-wider text-[#a34063]">Dream Travelers:</span>
+          <div className="font-mono text-base font-black bg-[#1c121e] text-pink-300 px-3 py-1 rounded-xl border border-[#a34063]">
+            {String(visitorCount).padStart(6, '0')}
           </div>
-
-          <div className="space-y-2 max-h-40 overflow-y-auto mb-3 p-3 bg-[#fff8f1] rounded-2xl border border-[#a34063]/20">
-            {chatHistory.map((msg, idx) => (
-              <div key={idx} className={`text-xs p-2 rounded-xl max-w-[85%] ${msg.sender === 'pip' ? 'bg-[#a34063] text-white self-start' : 'bg-white border border-[#a34063]/30 ml-auto'}`}>
-                <span className="font-bold opacity-75">{msg.sender === 'pip' ? 'Pip: ' : 'You: '}</span>
-                {msg.text}
-              </div>
-            ))}
-          </div>
-
-          <form onSubmit={handleChatSubmit} className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Ask Pip about dreams, nightlights, or lullabies..."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              className="p-2.5 rounded-xl border border-[#a34063]/30 text-xs font-medium flex-1 focus:outline-none focus:border-[#a34063]"
-            />
-            <button type="submit" className="px-4 py-2.5 bg-[#a34063] text-white font-bold rounded-xl text-xs hover:bg-[#8b3252]">
-              Send
-            </button>
-          </form>
-        </section>
-
-        {/* Showcase Toys */}
-        <section className="w-full text-left mb-10">
-          <div className="mb-4 text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#a34063]">Section 02</span>
-            <h3 className="font-serif text-3xl font-bold text-[#a34063] mt-1">Pip's Inventions & Crafts</h3>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <div
-              onClick={() => { playPop(523.25); setActiveModal('lullaby'); }}
-              className="cursor-pointer bg-white p-5 rounded-2xl border-2 border-[#a34063]/20 shadow-xs hover:-translate-y-1 transition-all text-center group"
-            >
-              <div className="w-20 h-20 mx-auto mb-3 p-2 rounded-2xl bg-[#fff8f1] flex items-center justify-center border border-[#a34063]/20 group-hover:scale-105 transition-transform">
-                <img src="/baby-assets/pip_lullaby_box.png" alt="Lullaby Box" className="w-full h-full object-contain" />
-              </div>
-              <h4 className="font-bold text-base text-[#a34063] mb-1">1. Lullaby Lab</h4>
-              <p className="text-xs opacity-75">Generative music box with soothing synth chimes.</p>
-            </div>
-
-            <div
-              onClick={() => { playPop(659.25); setActiveModal('nightlight'); }}
-              className="cursor-pointer bg-white p-5 rounded-2xl border-2 border-[#a34063]/20 shadow-xs hover:-translate-y-1 transition-all text-center group"
-            >
-              <div className="w-20 h-20 mx-auto mb-3 p-2 rounded-2xl bg-[#fff8f1] flex items-center justify-center border border-[#a34063]/20 group-hover:scale-105 transition-transform">
-                <img src="/baby-assets/pip_dream_lantern.png" alt="Dream Lantern" className="w-full h-full object-contain" />
-              </div>
-              <h4 className="font-bold text-base text-[#a34063] mb-1">2. Nightlight Collection</h4>
-              <p className="text-xs opacity-75">Dimmable lamps & bedside lanterns.</p>
-            </div>
-
-            <div
-              onClick={() => { playPop(783.99); setActiveModal('routes'); }}
-              className="cursor-pointer bg-white p-5 rounded-2xl border-2 border-[#a34063]/20 shadow-xs hover:-translate-y-1 transition-all text-center group"
-            >
-              <div className="w-20 h-20 mx-auto mb-3 p-2 rounded-2xl bg-[#fff8f1] flex items-center justify-center border border-[#a34063]/20 group-hover:scale-105 transition-transform">
-                <Rocket className="w-10 h-10 text-[#a34063] animate-bounce" />
-              </div>
-              <h4 className="font-bold text-base text-[#a34063] mb-1">3. Dream Delivery Routes</h4>
-              <p className="text-xs opacity-75">Rooftop flight maps for starlight delivery.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Origin Story Section */}
-        <section className="w-full p-6 sm:p-8 rounded-3xl bg-white border-2 border-[#a34063]/20 shadow-xs my-4 text-left">
-          <h3 className="font-serif text-2xl font-bold text-[#a34063] mb-4 text-center">Pip's Bedtime Origin Story</h3>
-          
-          <div className={`p-6 rounded-2xl bg-gradient-to-r ${storyScenes[activeScene].bg} text-white shadow-inner flex flex-col sm:flex-row gap-6 items-center`}>
-            <img src="/baby-assets/pip_portrait.png" alt="Pip Portrait" className="w-28 h-28 object-contain bg-white/20 p-2 rounded-2xl border border-white/40" />
-            <div className="flex-1 w-full">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 bg-white/20 rounded-full">{storyScenes[activeScene].title}</span>
-                <span className="text-xs font-mono">{activeScene + 1} / {storyScenes.length}</span>
-              </div>
-              <p className="text-sm leading-relaxed font-medium opacity-95 my-2">"{storyScenes[activeScene].text}"</p>
-              <div className="flex justify-between items-center mt-4 pt-2 border-t border-white/20">
-                <button disabled={activeScene === 0} onClick={() => setActiveScene(prev => prev - 1)} className="px-3 py-1 rounded-full bg-white/20 text-xs font-bold disabled:opacity-30">← Prev</button>
-                <button disabled={activeScene === storyScenes.length - 1} onClick={() => setActiveScene(prev => prev + 1)} className="px-3 py-1 rounded-full bg-white/20 text-xs font-bold disabled:opacity-30">Next →</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Live MongoDB Guestbook */}
-        <section className="w-full p-6 rounded-3xl bg-white border-2 border-[#a34063]/20 shadow-xs my-6 text-left">
-          <div className="flex items-center gap-2 mb-4">
-            <MessageSquare className="w-5 h-5 text-[#a34063]" />
-            <h3 className="font-serif text-xl font-bold text-[#a34063]">Live MongoDB Visitor Guestbook (+2 pts)</h3>
-          </div>
-
-          <form onSubmit={handleGuestSubmit} className="flex flex-col sm:flex-row gap-3 mb-4">
-            <input
-              type="text"
-              placeholder="Your Name"
-              value={guestName}
-              onChange={(e) => setGuestName(e.target.value)}
-              className="p-3 rounded-xl border border-[#a34063]/30 text-xs font-medium focus:outline-none focus:border-[#a34063]"
-            />
-            <input
-              type="text"
-              placeholder="Leave a sweet note for Pip..."
-              value={guestNote}
-              onChange={(e) => setGuestNote(e.target.value)}
-              className="p-3 rounded-xl border border-[#a34063]/30 text-xs font-medium flex-1 focus:outline-none focus:border-[#a34063]"
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-3 bg-[#a34063] text-white font-bold rounded-xl shadow-xs hover:bg-[#8b3252] flex items-center justify-center gap-2 text-xs disabled:opacity-50"
-            >
-              <Send className="w-3.5 h-3.5" /> {isSubmitting ? "Saving..." : "Sign Wall"}
-            </button>
-          </form>
-
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {messages.length === 0 ? (
-              <p className="text-xs opacity-60 italic">No notes signed yet. Be the first to leave a message!</p>
-            ) : (
-              messages.map((m, idx) => (
-                <div key={idx} className="p-3 bg-[#fff8f1] rounded-xl border border-[#a34063]/20 flex justify-between items-center text-xs">
-                  <span className="font-bold text-[#a34063]">{m.name}</span>
-                  <span className="opacity-80 italic">"{m.note}"</span>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
+        </div>
       </main>
 
-      {/* Pop-Up Modals */}
-      {activeModal && (
+      {/* POP-UP PANELS FOR SIDEBAR SELECTIONS */}
+      {activeSidebarTab && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-[#fff8f1] rounded-3xl border-4 border-[#a34063] p-6 max-w-md w-full shadow-2xl relative text-center">
-            <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 text-[#a34063] font-bold text-xl">✕</button>
+          <div className="bg-[#fff8f1] rounded-3xl border-4 border-[#a34063] p-6 max-w-lg w-full shadow-2xl relative text-left max-h-[85vh] overflow-y-auto">
+            
+            <button 
+              onClick={() => setActiveSidebarTab(null)}
+              className="absolute top-4 right-4 text-[#a34063] font-bold p-1 rounded-full hover:bg-[#a34063]/10"
+            >
+              <X className="w-6 h-6" />
+            </button>
 
-            {activeModal === 'lullaby' && (
+            {/* TAB 1: FIXED CHAT PANEL */}
+            {activeSidebarTab === 'chat' && (
               <div>
-                <img src="/baby-assets/pip_lullaby_box.png" alt="Lullaby Box" className="w-24 h-24 mx-auto mb-2 object-contain" />
-                <h3 className="font-serif text-xl font-bold text-[#a34063] mb-1">🎵 Lullaby Synthesizer</h3>
-                <p className="text-xs opacity-80 mb-6">Tap keys to compose a soothing lullaby note!</p>
-                <div className="flex justify-center gap-2">
-                  <button onClick={() => playPop(440)} className="px-4 py-2 bg-[#a34063] text-white font-bold rounded-xl shadow-xs">Note A</button>
-                  <button onClick={() => playPop(523.25)} className="px-4 py-2 bg-[#8b3252] text-white font-bold rounded-xl shadow-xs">Note C</button>
-                  <button onClick={() => playPop(659.25)} className="px-4 py-2 bg-[#5c4033] text-white font-bold rounded-xl shadow-xs">Note E</button>
+                <h3 className="font-serif text-2xl font-bold text-[#a34063] mb-3 flex items-center gap-2">
+                  <MessageCircle className="w-6 h-6" /> Chat With Pip
+                </h3>
+
+                <div className="space-y-2 max-h-52 overflow-y-auto mb-4 p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                  {chatHistory.map((msg, idx) => (
+                    <div 
+                      key={idx} 
+                      className={`text-xs p-3 rounded-xl max-w-[88%] ${
+                        msg.sender === 'pip' ? 'bg-[#a34063] text-white self-start' : 'bg-[#fff8f1] border border-[#a34063]/30 ml-auto text-[#5c4033]'
+                      }`}
+                    >
+                      <span className="font-bold opacity-80">{msg.sender === 'pip' ? 'Pip: ' : 'You: '}</span>
+                      {msg.text}
+                    </div>
+                  ))}
+                </div>
+
+                {/* 3 PRE-SET FIXED QUESTION BUTTONS (No manual typing) */}
+                <div className="space-y-2">
+                  <p className="text-xs font-bold text-[#a34063]">Select a question to ask Pip:</p>
+                  <button 
+                    onClick={() => handleAskPip('who')} 
+                    className="w-full text-left p-2.5 bg-white border border-[#a34063]/30 rounded-xl text-xs font-bold text-[#a34063] hover:bg-[#a34063]/10 transition-colors"
+                  >
+                    1. Who is Pip? (Look, species, quirks)
+                  </button>
+                  <button 
+                    onClick={() => handleAskPip('what')} 
+                    className="w-full text-left p-2.5 bg-white border border-[#a34063]/30 rounded-xl text-xs font-bold text-[#a34063] hover:bg-[#a34063]/10 transition-colors"
+                  >
+                    2. What does Pip do? (Profession & Craft)
+                  </button>
+                  <button 
+                    onClick={() => handleAskPip('tagline')} 
+                    className="w-full text-left p-2.5 bg-white border border-[#a34063]/30 rounded-xl text-xs font-bold text-[#a34063] hover:bg-[#a34063]/10 transition-colors"
+                  >
+                    3. What is Pip's tagline?
+                  </button>
                 </div>
               </div>
             )}
 
-            {activeModal === 'nightlight' && (
+            {/* TAB 2: INVENTIONS */}
+            {activeSidebarTab === 'inventions' && (
               <div>
-                <img src="/baby-assets/pip_dream_lantern.png" alt="Dream Lantern" className="w-24 h-24 mx-auto mb-2 object-contain" />
-                <h3 className="font-serif text-xl font-bold text-[#a34063] mb-1">💡 Dimmable Dream Lantern</h3>
-                <p className="text-xs opacity-80 mb-4">Adjust the slider to control the bedside glow!</p>
-                
-                <div 
-                  className="w-20 h-20 mx-auto rounded-full transition-all duration-300 flex items-center justify-center text-2xl mb-4"
-                  style={{
-                    backgroundColor: '#fde047',
-                    boxShadow: `0 0 ${lanternBrightness / 1.5}px #fde047`,
-                    opacity: lanternBrightness / 100
-                  }}
-                >
-                  🌙
-                </div>
-
-                <div className="flex items-center gap-3 px-4">
-                  <span className="text-xs font-bold">Dim</span>
-                  <input 
-                    type="range" 
-                    min="10" 
-                    max="100" 
-                    value={lanternBrightness} 
-                    onChange={(e) => setLanternBrightness(Number(e.target.value))}
-                    className="w-full accent-[#a34063]"
-                  />
-                  <span className="text-xs font-bold">Bright</span>
+                <h3 className="font-serif text-2xl font-bold text-[#a34063] mb-3 flex items-center gap-2">
+                  <Wand2 className="w-6 h-6" /> Pip's Inventions
+                </h3>
+                <div className="space-y-3">
+                  <div className="p-4 bg-white rounded-2xl border border-[#a34063]/20 flex items-center gap-3">
+                    <Music className="w-8 h-8 text-[#a34063]" />
+                    <div>
+                      <h4 className="font-bold text-sm text-[#a34063]">Lullaby Music Box</h4>
+                      <p className="text-xs opacity-80">Generates soothing pentatonic melody chimes.</p>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-white rounded-2xl border border-[#a34063]/20 flex items-center gap-3">
+                    <Lamp className="w-8 h-8 text-[#a34063]" />
+                    <div>
+                      <h4 className="font-bold text-sm text-[#a34063]">Dream Lantern</h4>
+                      <p className="text-xs opacity-80">Dimmable warm glow to banish room shadows.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            {activeModal === 'routes' && (
+            {/* TAB 3: PIP'S PORTFOLIO WORKS (6 CANON PROJECTS) */}
+            {activeSidebarTab === 'portfolio' && (
               <div>
-                <h3 className="font-serif text-xl font-bold text-[#a34063] mb-2">🚀 Starlight Flight Map</h3>
-                <p className="text-xs opacity-80 mb-4">Pip's rooftop path for tonight's dream deliveries!</p>
-                <div className="p-3 bg-white rounded-2xl border-2 border-dashed border-[#a34063]/40 font-mono text-xs text-[#a34063] font-bold">
-                  ✨ PATH ACTIVE: Cloud Nursery → Star Ridge
+                <h3 className="font-serif text-2xl font-bold text-[#a34063] mb-3 flex items-center gap-2">
+                  <Briefcase className="w-6 h-6" /> Pip's Portfolio
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">1. The Lullaby Lab</h4>
+                    <p className="opacity-80">Music box playing generative soothing lullabies.</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">2. Nightlight Collection</h4>
+                    <p className="opacity-80">Gallery of dimmable bedside lamps and lanterns.</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">3. Dream Delivery Routes</h4>
+                    <p className="opacity-80">Rooftop flight maps for starlight delivery.</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">4. Rattle & Block Toys</h4>
+                    <p className="opacity-80">Clickable toys Pip created for nursery creatures.</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">5. Bedtime Storybook</h4>
+                    <p className="opacity-80">Illustrated bedtime stories written by Pip.</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">6. Pip's Growth Chart</h4>
+                    <p className="opacity-80">Skills tracked on a nursery wall height chart.</p>
+                  </div>
                 </div>
               </div>
             )}
 
-            <button onClick={() => setActiveModal(null)} className="mt-6 px-6 py-2 bg-[#a34063] text-white font-bold rounded-full shadow-md text-xs">Close</button>
+            {/* TAB 4: ORIGIN STORY & WORLD */}
+            {activeSidebarTab === 'story' && (
+              <div>
+                <h3 className="font-serif text-2xl font-bold text-[#a34063] mb-3 flex items-center gap-2">
+                  <BookOpen className="w-6 h-6" /> Pip's Origin & World
+                </h3>
+                <div className="space-y-3 text-xs leading-relaxed">
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">Origin Story</h4>
+                    <p className="opacity-80">Born in the Midnight Nursery under starlight, Pip discovered glowing eyes that turn darkness into comforting warm lamps!</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">World & Supporting Creatures</h4>
+                    <p className="opacity-80">The Midnight Nursery neighborhood is home to sleepy owls, forest cubs, and little friendly ghosts who look forward to Pip's nightly dream drops!</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-2xl border border-[#a34063]/20">
+                    <h4 className="font-bold text-[#a34063]">Visual Art Style</h4>
+                    <p className="opacity-80">A whimsical mix of editorial serif typography, warm cream tones (#fff8f1), berry accents (#a34063), retro early-web soul, and cozy soft pastel art!</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       )}
