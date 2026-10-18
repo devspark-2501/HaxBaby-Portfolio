@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, Heart } from 'lucide-react';
+import { Sparkles, Heart, Cloud } from 'lucide-react';
 
 export default function MainStage({ playPop, visitorCount }) {
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
@@ -41,6 +41,13 @@ export default function MainStage({ playPop, visitorCount }) {
   return (
     <section className="max-w-3xl mx-auto px-4 py-8 flex flex-col items-center text-center relative z-10">
       
+      {/* Cloud Decorative Top Header */}
+      <div className="flex items-center gap-2 mb-2">
+        <Cloud className="w-6 h-6 text-[#a34063]/40 fill-[#a34063]/10" />
+        <span className="text-xs font-serif italic text-[#a34063]">Midnight Nursery Skies</span>
+        <Cloud className="w-6 h-6 text-[#a34063]/40 fill-[#a34063]/10" />
+      </div>
+
       {/* Banner Pill */}
       <div className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a34063]/10 border border-[#a34063]/30 text-[#a34063] font-bold text-xs shadow-xs">
         <Sparkles className="w-4 h-4" /> "I build the dreams you fall asleep inside."
@@ -79,7 +86,7 @@ export default function MainStage({ playPop, visitorCount }) {
       </p>
 
       <p className="max-w-md text-sm sm:text-base font-medium opacity-90 leading-relaxed mb-6">
-        Use the sidebar on the left to chat with Pip, view inventions, open the full portfolio, read bedtime stories, or leave a message on Pip's wall!
+        Welcome to Pip's cozy space! Tap the floating icons in the sidebar to chat, view inventions, open the full portfolio, read bedtime stories, or leave a note on Pip's wall!
       </p>
 
       {/* Odometer Hit Counter */}
@@ -91,7 +98,7 @@ export default function MainStage({ playPop, visitorCount }) {
         </div>
       </div>
 
-      {/* CUTEST SITTING PIP STAGE AT THE BOTTOM */}
+      {/* SITTING PIP STAGE */}
       <div className="w-full mt-6 p-6 rounded-3xl bg-white/80 border-2 border-[#a34063]/20 shadow-lg flex flex-col sm:flex-row items-center gap-6 text-left">
         <div className="w-32 h-32 flex-shrink-0 bg-[#fff8f1] rounded-2xl border-2 border-[#a34063]/30 p-2 shadow-inner">
           <img
