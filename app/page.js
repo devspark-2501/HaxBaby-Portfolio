@@ -9,14 +9,17 @@ import InventionsModal from './sections/InventionsModal';
 import PortfolioModal from './sections/PortfolioModal';
 import StoryModal from './sections/StoryModal';
 import GuestbookModal from './sections/GuestbookModal';
+import AboutStoryModal from './sections/AboutStoryModal';
+import EggEasterEgg from './sections/EggEasterEgg';
 
 export default function Home() {
   const [isMuted, setIsMuted] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
   const [activeTab, setActiveTab] = useState(null);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [visitorCount] = useState(1337);
 
-  // Web Audio API Synthesizer
+  // Web Audio Synthesizer
   const playPop = (freq = 523.25) => {
     if (isMuted) return;
     try {
@@ -58,8 +61,17 @@ export default function Home() {
 
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} playPop={playPop} />
 
-      <MainStage playPop={playPop} visitorCount={visitorCount} />
+      <MainStage
+        playPop={playPop}
+        visitorCount={visitorCount}
+        onOpenAbout={() => setIsAboutOpen(true)}
+      />
 
+      {/* Secret Crackable Easter Egg on Bottom Left */}
+      <EggEasterEgg playPop={playPop} />
+
+      {/* Modals */}
+      {isAboutOpen && <AboutStoryModal onClose={() => setIsAboutOpen(false)} />}
       {activeTab === 'chat' && <ChatModal onClose={() => setActiveTab(null)} playPop={playPop} />}
       {activeTab === 'inventions' && <InventionsModal onClose={() => setActiveTab(null)} playPop={playPop} />}
       {activeTab === 'portfolio' && <PortfolioModal onClose={() => setActiveTab(null)} />}

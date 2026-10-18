@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, Heart, Cloud } from 'lucide-react';
+import { Sparkles, Heart, Cloud, BookOpen } from 'lucide-react';
 
-export default function MainStage({ playPop, visitorCount }) {
+export default function MainStage({ playPop, visitorCount, onOpenAbout }) {
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
   const avatarRef = useRef(null);
 
@@ -39,16 +39,16 @@ export default function MainStage({ playPop, visitorCount }) {
   };
 
   return (
-    <section className="max-w-3xl mx-auto px-4 py-8 flex flex-col items-center text-center relative z-10">
+    <section className="max-w-3xl mx-auto px-4 py-6 flex flex-col items-center text-center relative z-10">
       
-      {/* Cloud Decorative Top Header */}
+      {/* Cloud Header Motif */}
       <div className="flex items-center gap-2 mb-2">
-        <Cloud className="w-6 h-6 text-[#a34063]/40 fill-[#a34063]/10" />
+        <Cloud className="w-5 h-5 text-[#a34063]/40 fill-[#a34063]/10" />
         <span className="text-xs font-serif italic text-[#a34063]">Midnight Nursery Skies</span>
-        <Cloud className="w-6 h-6 text-[#a34063]/40 fill-[#a34063]/10" />
+        <Cloud className="w-5 h-5 text-[#a34063]/40 fill-[#a34063]/10" />
       </div>
 
-      {/* Banner Pill */}
+      {/* Tagline Banner */}
       <div className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a34063]/10 border border-[#a34063]/30 text-[#a34063] font-bold text-xs shadow-xs">
         <Sparkles className="w-4 h-4" /> "I build the dreams you fall asleep inside."
       </div>
@@ -85,12 +85,19 @@ export default function MainStage({ playPop, visitorCount }) {
         🌙 Junior Dream Engineer @ Midnight Nursery
       </p>
 
-      <p className="max-w-md text-sm sm:text-base font-medium opacity-90 leading-relaxed mb-6">
-        Welcome to Pip's cozy space! Tap the floating icons in the sidebar to chat, view inventions, open the full portfolio, read bedtime stories, or leave a note on Pip's wall!
-      </p>
+      {/* BIG PRIMARY ABOUT PAGE BUTTON */}
+      <button
+        onClick={() => {
+          if (playPop) playPop(783.99);
+          onOpenAbout();
+        }}
+        className="my-4 px-8 py-4 bg-[#a34063] text-white font-serif font-black text-base sm:text-lg rounded-3xl shadow-xl hover:bg-[#8b3252] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 border-2 border-white"
+      >
+        <BookOpen className="w-6 h-6" /> Open Pip's Full Story & About Page
+      </button>
 
       {/* Odometer Hit Counter */}
-      <div className="p-3 rounded-2xl bg-white border border-[#a34063]/20 shadow-xs inline-flex items-center gap-3 mb-12">
+      <div className="p-3 rounded-2xl bg-white border border-[#a34063]/20 shadow-xs inline-flex items-center gap-3 mb-8">
         <Heart className="w-5 h-5 text-[#a34063] fill-[#a34063] animate-pulse" />
         <span className="text-xs font-black uppercase tracking-wider text-[#a34063]">Dream Travelers:</span>
         <div className="font-mono text-base font-black bg-[#1c121e] text-pink-300 px-3 py-1 rounded-xl border border-[#a34063]">
@@ -98,8 +105,8 @@ export default function MainStage({ playPop, visitorCount }) {
         </div>
       </div>
 
-      {/* SITTING PIP STAGE */}
-      <div className="w-full mt-6 p-6 rounded-3xl bg-white/80 border-2 border-[#a34063]/20 shadow-lg flex flex-col sm:flex-row items-center gap-6 text-left">
+      {/* SITTING PIP STAGE WITH LANTERN */}
+      <div className="w-full mt-2 p-6 rounded-3xl bg-white/80 border-2 border-[#a34063]/20 shadow-lg flex flex-col sm:flex-row items-center gap-6 text-left">
         <div className="w-32 h-32 flex-shrink-0 bg-[#fff8f1] rounded-2xl border-2 border-[#a34063]/30 p-2 shadow-inner">
           <img
             src="/baby-assets/pip_portrait.png"
@@ -112,7 +119,7 @@ export default function MainStage({ playPop, visitorCount }) {
             Pip Sitting At Midnight Nursery 🌙
           </h3>
           <p className="text-xs leading-relaxed opacity-85">
-            Pip sits comfortably on a cloud cushion in the nursery, carefully tuning lullaby strings and dimming bedside lanterns before flight time!
+            Pip sits comfortably on a cloud cushion holding a dimmable bedside lantern and music box, ready for flight deliveries across Whispering Woods[cite: 6]!
           </p>
         </div>
       </div>
