@@ -2,37 +2,56 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, Heart, Sun, Moon, Volume2, VolumeX, Lamp, Rocket, Send, MessageSquare, User, Wrench, BookOpen } from 'lucide-react';
+import { Sparkles, Heart, Sun, Moon, Volume2, VolumeX, Lamp, Rocket, Send, MessageSquare, User, Wrench, BookOpen, Bot, Sparkle } from 'lucide-react';
 
-export default function PipHaxBabyPortfolio() {
+export default function UltimatePipPortfolio() {
   const [isMuted, setIsMuted] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
-  const [lanternBrightness, setLanternBrightness] = useState(80); // Interactive Light Dimmer
+  const [lanternBrightness, setLanternBrightness] = useState(85);
   const [activeModal, setActiveModal] = useState(null);
   const [activeScene, setActiveScene] = useState(0);
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
-  
-  // Guestbook & Visitor State
+
+  // Tier 3: Returning Visitor Memory (LocalStorage)
+  const [visitorName, setVisitorName] = useState('');
+  const [isReturningVisitor, setIsReturningVisitor] = useState(false);
+
+  // Tier 3: Rule-Based Pip AI Chat Bot State
+  const [chatInput, setChatInput] = useState('');
+  const [chatHistory, setChatHistory] = useState([
+    { sender: 'pip', text: "Yawn... Hi friend! I'm Pip! Ask me about my dreams, nightlights, or lullabies! 🌙" }
+  ]);
+
+  // MongoDB Live Guestbook State
   const [messages, setMessages] = useState([]);
   const [guestName, setGuestName] = useState('');
   const [guestNote, setGuestNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const avatarRef = useRef(null);
 
-  // Fetch Live Guestbook Entries from MongoDB API
+  // Check returning visitor memory on load
   useEffect(() => {
+    const savedName = localStorage.getItem('pip_visitor_name');
+    if (savedName) {
+      setVisitorName(savedName);
+      setIsReturningVisitor(true);
+    }
     fetchGuestbook();
   }, []);
+
+  const saveVisitorName = (name) => {
+    localStorage.setItem('pip_visitor_name', name);
+    setVisitorName(name);
+    setIsReturningVisitor(true);
+  };
 
   const fetchGuestbook = async () => {
     try {
       const res = await fetch('/api/guestbook');
       const json = await res.json();
-      if (json.success) {
-        setMessages(json.data);
-      }
+      if (json.success) setMessages(json.data);
     } catch (err) {
-      console.log('Failed to fetch guestbook:', err);
+      console.log('Guestbook error:', err);
     }
   };
 
@@ -58,7 +77,7 @@ export default function PipHaxBabyPortfolio() {
       osc.start();
       osc.stop(ctx.currentTime + 0.25);
     } catch (e) {
-      console.log('Audio error:', e);
+      console.log(e);
     }
   };
 
@@ -83,24 +102,54 @@ export default function PipHaxBabyPortfolio() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Easter Egg Confetti Trigger
+  // Easter Egg Trigger
   const triggerEasterEgg = () => {
     playPop(880);
     confetti({
-      particleCount: 90,
-      spread: 70,
+      particleCount: 100,
+      spread: 80,
       origin: { y: 0.35 },
       colors: ['#a34063', '#fbcfe8', '#fef08a', '#93c5fd', '#a7f3d0']
     });
   };
 
-  // Handle Guestbook Submit to MongoDB
+  // Pip Chat Dialogue Logic
+  const handleChatSubmit = (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userMsg = chatInput.trim();
+    setChatHistory((prev) => [...prev, { sender: 'user', text: userMsg }]);
+    setChatInput('');
+    playPop(659.25);
+
+    setTimeout(() => {
+      let pipReply = "I love quiet night skies and gentle melodies! 🌟";
+      const query = userMsg.toLowerCase();
+
+      if (query.includes('hello') || query.includes('hi')) {
+        pipReply = `Welcome back ${visitorName || 'friend'}! Ready to build cozy dreams together? 🎀`;
+      } else if (query.includes('lullaby') || query.includes('music')) {
+        pipReply = "My Lullaby Box uses soft wooden chimes to tune pentatonic sleep scales! 🎵";
+      } else if (query.includes('lantern') || query.includes('light')) {
+        pipReply = "My bedside lanterns use warm amber filaments so night monsters run away! 💡";
+      } else if (query.includes('who') || query.includes('pip')) {
+        pipReply = "I'm Pip! Junior Dream Engineer at Midnight Nursery! 🌙";
+      }
+
+      setChatHistory((prev) => [...prev, { sender: 'pip', text: pipReply }]);
+      playPop(880);
+    }, 600);
+  };
+
+  // MongoDB Guestbook Submit
   const handleGuestSubmit = async (e) => {
     e.preventDefault();
     if (!guestName || !guestNote || isSubmitting) return;
 
     setIsSubmitting(true);
     playPop(880);
+    saveVisitorName(guestName);
 
     try {
       const res = await fetch('/api/guestbook', {
@@ -113,10 +162,10 @@ export default function PipHaxBabyPortfolio() {
       if (json.success) {
         setGuestName('');
         setGuestNote('');
-        fetchGuestbook(); // Refresh entries
+        fetchGuestbook();
       }
     } catch (err) {
-      console.log('Error signing guestbook:', err);
+      console.log('Error submitting signature:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -162,7 +211,6 @@ export default function PipHaxBabyPortfolio() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Mute Switch */}
           <button
             onClick={() => setIsMuted(!isMuted)}
             className="p-3 rounded-2xl bg-white/80 shadow-sm border border-[#a34063]/20 hover:scale-105 active:scale-95 transition-all text-[#a34063]"
@@ -171,7 +219,6 @@ export default function PipHaxBabyPortfolio() {
             {isMuted ? <VolumeX className="w-5 h-5 text-gray-400" /> : <Volume2 className="w-5 h-5" />}
           </button>
 
-          {/* Day / Night Mood Shift */}
           <button
             onClick={() => {
               setIsNightMode(!isNightMode);
@@ -188,14 +235,21 @@ export default function PipHaxBabyPortfolio() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8 flex flex-col items-center text-center relative z-10">
         
+        {/* Tier 3: Returning Visitor Memory Greeting */}
+        {isReturningVisitor && (
+          <div className="mb-3 px-4 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold text-xs shadow-xs animate-pulse">
+            ✨ Welcome back, {visitorName}! Pip remembered your visit!
+          </div>
+        )}
+
         <div className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a34063]/10 border border-[#a34063]/30 text-[#a34063] font-bold text-xs shadow-xs">
           <Sparkles className="w-4 h-4" /> Good things start small.
         </div>
 
-        {/* Hero Avatar Stage */}
+        {/* Hero Character Stage */}
         <div
           ref={avatarRef}
-          className="relative w-60 h-60 sm:w-68 sm:h-68 my-4 rounded-full p-4 bg-white border-4 border-[#a34063] shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+          className="relative w-60 h-60 sm:w-68 sm:h-68 my-4 rounded-full p-4 bg-white border-4 border-[#a34063] shadow-xl flex items-center justify-center hover:scale-105 transition-transform animate-bounce-slow"
         >
           <button
             onClick={triggerEasterEgg}
@@ -216,7 +270,6 @@ export default function PipHaxBabyPortfolio() {
           </div>
         </div>
 
-        {/* Character Title */}
         <h2 className="font-serif text-4xl sm:text-6xl font-black tracking-tight mb-2 text-[#a34063]">
           Pip The Skull Baby
         </h2>
@@ -229,34 +282,37 @@ export default function PipHaxBabyPortfolio() {
           A gentle, sleepy creature with a smooth round skull face, soft eye sockets with glowing warm amber pinpricks, and a bedtime nightcap with stars and a pink bow.
         </p>
 
-        {/* Core Brief Answer Cards */}
-        <div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-left">
-          <div className="p-5 bg-white rounded-2xl border border-[#a34063]/20 shadow-xs">
-            <div className="w-8 h-8 rounded-xl bg-[#a34063]/10 flex items-center justify-center text-[#a34063] mb-3">
-              <User className="w-4 h-4" />
-            </div>
-            <h4 className="font-serif font-bold text-[#a34063] text-lg mb-1">1. What they are</h4>
-            <p className="text-xs opacity-80 leading-relaxed">Pip: A gentle skull baby with glowing amber eye sockets who designs nursery dreams.</p>
+        {/* Tier 3 Feature: Live Character AI Chat Bot */}
+        <section className="w-full p-6 rounded-3xl bg-white border-2 border-[#a34063]/20 shadow-xs mb-10 text-left">
+          <div className="flex items-center gap-2 mb-3">
+            <Bot className="w-5 h-5 text-[#a34063]" />
+            <h3 className="font-serif text-xl font-bold text-[#a34063]">Chat With Pip (Tier 3 Boss Feature)</h3>
           </div>
 
-          <div className="p-5 bg-white rounded-2xl border border-[#a34063]/20 shadow-xs">
-            <div className="w-8 h-8 rounded-xl bg-[#a34063]/10 flex items-center justify-center text-[#a34063] mb-3">
-              <Wrench className="w-4 h-4" />
-            </div>
-            <h4 className="font-serif font-bold text-[#a34063] text-lg mb-1">2. What they do</h4>
-            <p className="text-xs opacity-80 leading-relaxed">Crafts generative lullaby music boxes, dimmable bedside lanterns, and flight delivery routes.</p>
+          <div className="space-y-2 max-h-40 overflow-y-auto mb-3 p-3 bg-[#fff8f1] rounded-2xl border border-[#a34063]/20">
+            {chatHistory.map((msg, idx) => (
+              <div key={idx} className={`text-xs p-2 rounded-xl max-w-[85%] ${msg.sender === 'pip' ? 'bg-[#a34063] text-white self-start' : 'bg-white border border-[#a34063]/30 ml-auto'}`}>
+                <span className="font-bold opacity-75">{msg.sender === 'pip' ? 'Pip: ' : 'You: '}</span>
+                {msg.text}
+              </div>
+            ))}
           </div>
 
-          <div className="p-5 bg-white rounded-2xl border border-[#a34063]/20 shadow-xs">
-            <div className="w-8 h-8 rounded-xl bg-[#a34063]/10 flex items-center justify-center text-[#a34063] mb-3">
-              <BookOpen className="w-4 h-4" />
-            </div>
-            <h4 className="font-serif font-bold text-[#a34063] text-lg mb-1">3. What their story is</h4>
-            <p className="text-xs opacity-80 leading-relaxed">Born under Midnight Nursery stars, transforming night fears into bedtime wonder through interactive scenes.</p>
-          </div>
-        </div>
+          <form onSubmit={handleChatSubmit} className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Ask Pip about dreams, nightlights, or lullabies..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              className="p-2.5 rounded-xl border border-[#a34063]/30 text-xs font-medium flex-1 focus:outline-none focus:border-[#a34063]"
+            />
+            <button type="submit" className="px-4 py-2.5 bg-[#a34063] text-white font-bold rounded-xl text-xs hover:bg-[#8b3252]">
+              Send
+            </button>
+          </form>
+        </section>
 
-        {/* Project Showcase Toys */}
+        {/* Showcase Toys */}
         <section className="w-full text-left mb-10">
           <div className="mb-4 text-center">
             <span className="text-xs font-bold uppercase tracking-widest text-[#a34063]">Section 02</span>
@@ -319,7 +375,7 @@ export default function PipHaxBabyPortfolio() {
           </div>
         </section>
 
-        {/* Live MongoDB Guestbook Section (+2 pts Side Quest) */}
+        {/* Live MongoDB Guestbook */}
         <section className="w-full p-6 rounded-3xl bg-white border-2 border-[#a34063]/20 shadow-xs my-6 text-left">
           <div className="flex items-center gap-2 mb-4">
             <MessageSquare className="w-5 h-5 text-[#a34063]" />
@@ -384,12 +440,11 @@ export default function PipHaxBabyPortfolio() {
               </div>
             )}
 
-            {/* Dimmable Lantern Switch */}
             {activeModal === 'nightlight' && (
               <div>
                 <img src="/baby-assets/pip_dream_lantern.png" alt="Dream Lantern" className="w-24 h-24 mx-auto mb-2 object-contain" />
                 <h3 className="font-serif text-xl font-bold text-[#a34063] mb-1">💡 Dimmable Dream Lantern</h3>
-                <p className="text-xs opacity-80 mb-4">Adjust the slider below to control the bedside light glow!</p>
+                <p className="text-xs opacity-80 mb-4">Adjust the slider to control the bedside glow!</p>
                 
                 <div 
                   className="w-20 h-20 mx-auto rounded-full transition-all duration-300 flex items-center justify-center text-2xl mb-4"
