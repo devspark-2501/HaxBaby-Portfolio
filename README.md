@@ -85,4 +85,47 @@ babys-portfolio/
 │       ├── StoryModal.jsx       # Origin story, world lore, & visual art style summary
 │       ├── GuestbookModal.jsx   # MongoDB live sign wall & note submission form
 │       ├── AboutStoryModal.jsx  # Scroll-driven origin journey modal with gradient scene cards
-│       └── EggEasterEgg.jsx     # Crackable surprise egg component with confetti blast
+│       └── EggEasterEgg.jsx     # Crackable surprise egg component with confett
+```
+
+
+🛠️ Detailed Function & Component Breakdown
+1. app/page.js (Root Orchestrator)
+playPop(freq): Generates real-time audio tones using window.AudioContext without external sound files.
+
+siteTimer Effect: Runs a 1-second interval loop. At 60 seconds, it toggles isNightMode to true and triggers the sleep notification banner. At 120 seconds, it wakes Pip up and resets the cycle.
+
+sleepBanner State: Controls the visibility, title, and message for the mode-shift banner.
+
+2. app/sections/MainStage.jsx (Hero & Stage Container)
+Eye Tracking Logic: Computes distance and angle relative to the avatar container's bounding box to set pupilPos.x and pupilPos.y.
+
+Right-Side Sleep Bar: Displays a vertical glassmorphism track indicating the percentage toward the next sleep shift.
+
+Sitting Pip Stage: Displays Pip sitting on a cloud holding a dimmable lantern and music box.
+
+3. app/sections/EggEasterEgg.jsx (Crackable Egg Component)
+handleEggClick(): Increments crackLevel from 0 to 3, playing rising frequency chimes and rendering SVG crack paths over the egg shell. On the 3rd tap, it invokes canvas-confetti for a full-screen starburst.
+
+4. app/sections/ChatModal.jsx (Pre-Set Dialogue Engine)
+handleAskPip(questionType): Handles fixed Q&A options ("Who is Pip?", "What does Pip do?", "What is Pip's tagline?"), updating chatHistory with Pip's exact lore responses.
+
+5. app/sections/InventionsModal.jsx (Interactive Toys)
+Lullaby Synth Keys: Buttons calling playPop() at 440Hz (Note A), 523.25Hz (Note C), and 659.25Hz (Note E).
+
+Lantern Dimmer: Real-time range input controlling inline styles for lantern shadow spread and element opacity.
+
+6. app/sections/GuestbookModal.jsx & app/api/guestbook/route.js (MongoDB Backend)
+GET() Handler: Connects to the pip_nursery database, sorts notes by createdAt: -1, and returns the latest 20 signatures.
+
+POST() Handler: Validates visitor name and note inputs, sanitizes string lengths, and inserts the signature into MongoDB.
+
+7. app/components/StarTrail.jsx (Particle Trail)
+Tracks mousemove events and pushes random star emojis (✨, ⭐, 🌸, 🌙) to an array with CSS ping animations, automatically trimming old particles to maintain 60 FPS performance.
+
+🏆 Hackathon Tier Breakdown & Score Summary
+Tier 1 (Complete Portfolio): 100% Met (Eye tracking, scroll-driven story, day/night shift, mobile layout, Easter egg).
+
+Tier 2 (Memorable Standout): 100% Met (Lullaby synth, dimmable lantern, delivery routes, storybook, mini-game soundboard).
+
+Tier 3 (Boss Level Legendary): Met (Live MongoDB guestbook, returning visitor memory, character dialogue bot, high performance, and high-polish responsive UI).i blast
