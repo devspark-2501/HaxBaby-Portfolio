@@ -2,67 +2,17 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, Heart, Cloud, BookOpen, Moon, Zzz, Sun } from 'lucide-react';
+import { Sparkles, Heart, Cloud, BookOpen, Moon } from 'lucide-react';
 
 export default function MainStage({
   playPop,
   visitorCount,
   onOpenAbout,
   isNightMode,
-  setIsNightMode,
-  setSleepBanner
+  siteTimer
 }) {
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
-  const [siteTimer, setSiteTimer] = useState(0);
   const avatarRef = useRef(null);
-
-  // 60-second site timer logic
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSiteTimer((prev) => {
-        const nextTime = prev + 1;
-
-        // At 60 seconds, trigger Night Mode Sleep Shift for 1 minute
-        if (nextTime === 60) {
-          setIsNightMode(true);
-          if (playPop) playPop(440);
-          setSleepBanner({
-            show: true,
-            title: "🌙 Night Shift Activated!",
-            message: "Pip is sleeping for 1 minute... Goodnight! ✨",
-            isNight: true
-          });
-
-          // Auto-hide popup banner after 4 seconds
-          setTimeout(() => {
-            setSleepBanner((prev) => ({ ...prev, show: false }));
-          }, 4000);
-        }
-
-        // At 120 seconds (after 1min of sleep), switch back to Day Mode and reset loop
-        if (nextTime >= 120) {
-          setIsNightMode(false);
-          if (playPop) playPop(880);
-          setSleepBanner({
-            show: true,
-            title: "☀️ Good Morning!",
-            message: "Pip woke up rested and ready to build dreams! 🎀",
-            isNight: false
-          });
-
-          setTimeout(() => {
-            setSleepBanner((prev) => ({ ...prev, show: false }));
-          }, 4000);
-
-          return 0; // Reset loop counter
-        }
-
-        return nextTime;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [setIsNightMode, setSleepBanner, playPop]);
 
   // Pupil cursor tracking
   useEffect(() => {

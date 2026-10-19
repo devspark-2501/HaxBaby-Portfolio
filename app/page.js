@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './sections/Navbar';
 import Sidebar from './sections/Sidebar';
 import MainStage from './sections/MainStage';
@@ -20,6 +20,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(null);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [visitorCount] = useState(1337);
+  const [siteTimer, setSiteTimer] = useState(0);
 
   // Animated Pop-up Notification State
   const [sleepBanner, setSleepBanner] = useState({
@@ -55,6 +56,51 @@ export default function Home() {
     }
   };
 
+  // Safely manage site timer loop inside parent component
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSiteTimer((prev) => {
+        const nextTime = prev + 1;
+
+        if (nextTime === 60) {
+          setIsNightMode(true);
+          playPop(440);
+          setSleepBanner({
+            show: true,
+            title: "🌙 Night Shift Activated!",
+            message: "Pip is sleeping for 1 minute... Goodnight! ✨",
+            isNight: true
+          });
+
+          setTimeout(() => {
+            setSleepBanner((banner) => ({ ...banner, show: false }));
+          }, 4000);
+        }
+
+        if (nextTime >= 120) {
+          setIsNightMode(false);
+          playPop(880);
+          setSleepBanner({
+            show: true,
+            title: "☀️ Good Morning!",
+            message: "Pip woke up rested and ready to build dreams! 🎀",
+            isNight: false
+          });
+
+          setTimeout(() => {
+            setSleepBanner((banner) => ({ ...banner, show: false }));
+          }, 4000);
+
+          return 0;
+        }
+
+        return nextTime;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isMuted]);
+
   return (
     <div
       className={`min-h-screen transition-colors duration-700 font-sans relative overflow-x-hidden ${
@@ -78,8 +124,7 @@ export default function Home() {
         visitorCount={visitorCount}
         onOpenAbout={() => setIsAboutOpen(true)}
         isNightMode={isNightMode}
-        setIsNightMode={setIsNightMode}
-        setSleepBanner={setSleepBanner}
+        siteTimer={siteTimer}
       />
 
       {/* Secret Crackable Easter Egg */}
