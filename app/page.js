@@ -11,6 +11,7 @@ import StoryModal from './sections/StoryModal';
 import GuestbookModal from './sections/GuestbookModal';
 import AboutStoryModal from './sections/AboutStoryModal';
 import EggEasterEgg from './sections/EggEasterEgg';
+import StarTrail from './components/StarTrail';
 
 export default function Home() {
   const [isMuted, setIsMuted] = useState(false);
@@ -51,6 +52,9 @@ export default function Home() {
         isNightMode ? 'bg-[#1c121e] text-[#fff8f1]' : 'bg-[#fff8f1] text-[#5c4033]'
       }`}
     >
+      {/* Floating Sparkle Trail Cursor Overlay */}
+      <StarTrail />
+
       <Navbar
         isMuted={isMuted}
         setIsMuted={setIsMuted}
@@ -67,14 +71,13 @@ export default function Home() {
         onOpenAbout={() => setIsAboutOpen(true)}
       />
 
-      {/* Secret Crackable Easter Egg on Bottom Left */}
       <EggEasterEgg playPop={playPop} />
 
       {/* Modals */}
       {isAboutOpen && <AboutStoryModal onClose={() => setIsAboutOpen(false)} />}
       {activeTab === 'chat' && <ChatModal onClose={() => setActiveTab(null)} playPop={playPop} />}
       {activeTab === 'inventions' && <InventionsModal onClose={() => setActiveTab(null)} playPop={playPop} />}
-      {activeTab === 'portfolio' && <PortfolioModal onClose={() => setActiveTab(null)} />}
+      {activeTab === 'portfolio' && <PortfolioModal onClose={() => setActiveTab(null)} playPop={playPop} />}
       {activeTab === 'story' && <StoryModal onClose={() => setActiveTab(null)} />}
       {activeTab === 'guestbook' && <GuestbookModal onClose={() => setActiveTab(null)} playPop={playPop} />}
     </div>
