@@ -2,24 +2,72 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, Heart, Cloud, BookOpen, Moon, Zzz } from 'lucide-react';
+import { Sparkles, Heart, Cloud, BookOpen, Moon, Zzz, Sun } from 'lucide-react';
 
-export default function MainStage({ playPop, visitorCount, onOpenAbout }) {
+export default function MainStage({
+  playPop,
+  visitorCount,
+  onOpenAbout,
+  isNightMode,
+  setIsNightMode,
+  setSleepBanner
+}) {
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
-  const [sleepiness, setSleepiness] = useState(20);
+  const [siteTimer, setSiteTimer] = useState(0);
   const avatarRef = useRef(null);
 
-  // Slowly increase sleepiness over time
+  // 60-second site timer logic
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSleepiness((prev) => Math.min(100, prev + 5));
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
+    const interval = setInterval(() => {
+      setSiteTimer((prev) => {
+        const nextTime = prev + 1;
 
+        // At 60 seconds, trigger Night Mode Sleep Shift for 1 minute
+        if (nextTime === 60) {
+          setIsNightMode(true);
+          if (playPop) playPop(440);
+          setSleepBanner({
+            show: true,
+            title: "🌙 Night Shift Activated!",
+            message: "Pip is sleeping for 1 minute... Goodnight! ✨",
+            isNight: true
+          });
+
+          // Auto-hide popup banner after 4 seconds
+          setTimeout(() => {
+            setSleepBanner((prev) => ({ ...prev, show: false }));
+          }, 4000);
+        }
+
+        // At 120 seconds (after 1min of sleep), switch back to Day Mode and reset loop
+        if (nextTime >= 120) {
+          setIsNightMode(false);
+          if (playPop) playPop(880);
+          setSleepBanner({
+            show: true,
+            title: "☀️ Good Morning!",
+            message: "Pip woke up rested and ready to build dreams! 🎀",
+            isNight: false
+          });
+
+          setTimeout(() => {
+            setSleepBanner((prev) => ({ ...prev, show: false }));
+          }, 4000);
+
+          return 0; // Reset loop counter
+        }
+
+        return nextTime;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [setIsNightMode, setSleepBanner, playPop]);
+
+  // Pupil cursor tracking
   useEffect(() => {
     const handleMouseMove = (e) => {
-      if (!avatarRef.current || sleepiness >= 100) return;
+      if (!avatarRef.current || isNightMode) return;
       const rect = avatarRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -35,18 +83,7 @@ export default function MainStage({ playPop, visitorCount, onOpenAbout }) {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [sleepiness]);
-
-  const wakePipUp = () => {
-    if (playPop) playPop(880);
-    setSleepiness(0);
-    confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.4 },
-      colors: ['#fbcfe8', '#fef08a', '#93c5fd']
-    });
-  };
+  }, [isNightMode]);
 
   const triggerEasterEgg = () => {
     if (playPop) playPop(880);
@@ -58,9 +95,29 @@ export default function MainStage({ playPop, visitorCount, onOpenAbout }) {
     });
   };
 
+  // Calculate percentage toward next shift (0 to 60 seconds)
+  const timerPercentage = Math.min(100, ((siteTimer % 60) / 60) * 100);
+
   return (
     <section className="max-w-3xl mx-auto px-4 py-6 flex flex-col items-center text-center relative z-10">
       
+      {/* FLOATING TRANSPARENT SLEEP BAR ON THE RIGHT SIDE */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-2 p-3 rounded-full bg-white/20 backdrop-blur-md border border-white/40 shadow-lg">
+        <Moon className={`w-5 h-5 ${isNightMode ? 'text-amber-300 animate-pulse' : 'text-[#a34063]'}`} />
+        
+        {/* Large Vertical Track */}
+        <div className="w-4 h-48 sm:h-64 bg-black/10 rounded-full overflow-hidden relative flex flex-col justify-end border border-white/30">
+          <div
+            className="w-full bg-gradient-to-t from-[#a34063] via-pink-400 to-amber-300 transition-all duration-700"
+            style={{ height: `${timerPercentage}%` }}
+          />
+        </div>
+
+        <span className="text-[10px] font-mono font-bold text-[#a34063] bg-white/80 px-2 py-0.5 rounded-full border border-[#a34063]/20">
+          {60 - (siteTimer % 60)}s
+        </span>
+      </div>
+
       {/* Cloud Header Motif */}
       <div className="flex items-center gap-2 mb-2">
         <Cloud className="w-5 h-5 text-[#a34063]/40 fill-[#a34063]/10" />
@@ -68,29 +125,9 @@ export default function MainStage({ playPop, visitorCount, onOpenAbout }) {
         <Cloud className="w-5 h-5 text-[#a34063]/40 fill-[#a34063]/10" />
       </div>
 
-      {/* Sleepiness Meter Widget */}
-      <div className="mb-4 w-full max-w-xs p-2.5 bg-white rounded-2xl border border-[#a34063]/20 shadow-xs flex items-center gap-3">
-        <Moon className="w-4 h-4 text-[#a34063]" />
-        <div className="flex-1 text-left">
-          <div className="flex justify-between items-center text-[10px] font-bold text-[#a34063] mb-1">
-            <span>Pip's Sleepiness:</span>
-            <span>{sleepiness}%</span>
-          </div>
-          <div className="w-full h-2 bg-[#fff8f1] rounded-full overflow-hidden border border-[#a34063]/20">
-            <div
-              className="h-full bg-gradient-to-r from-pink-400 to-[#a34063] transition-all duration-500"
-              style={{ width: `${sleepiness}%` }}
-            />
-          </div>
-        </div>
-        {sleepiness >= 80 && (
-          <button
-            onClick={wakePipUp}
-            className="px-2 py-1 bg-[#a34063] text-white text-[10px] font-bold rounded-lg shadow-xs hover:scale-105 active:scale-95"
-          >
-            Wake Pip! 🎀
-          </button>
-        )}
+      {/* Tagline Banner */}
+      <div className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#a34063]/10 border border-[#a34063]/30 text-[#a34063] font-bold text-xs shadow-xs">
+        <Sparkles className="w-4 h-4" /> "I build the dreams you fall asleep inside."
       </div>
 
       {/* Main Avatar Stage */}
@@ -108,17 +145,17 @@ export default function MainStage({ playPop, visitorCount, onOpenAbout }) {
         <img
           src="/baby-assets/pip_avatar_cloud.png"
           alt="Pip Avatar"
-          className={`w-full h-full object-contain rounded-full ${sleepiness >= 100 ? 'opacity-70 blur-[0.5px]' : ''}`}
+          className={`w-full h-full object-contain rounded-full ${isNightMode ? 'opacity-70 blur-[0.5px]' : ''}`}
         />
 
-        {/* Pupil Eye Tracking Layer (or Sleeping ZZZ Overlay) */}
-        {sleepiness < 100 ? (
+        {/* Eye Tracking or Sleeping ZZZ Overlay */}
+        {!isNightMode ? (
           <div className="absolute top-[38%] flex gap-10 justify-center pointer-events-none">
             <div className="w-3 h-3 bg-amber-300 rounded-full shadow-[0_0_8px_#fde047]" style={{ transform: `translate(${pupilPos.x}px, ${pupilPos.y}px)` }} />
             <div className="w-3 h-3 bg-amber-300 rounded-full shadow-[0_0_8px_#fde047]" style={{ transform: `translate(${pupilPos.x}px, ${pupilPos.y}px)` }} />
           </div>
         ) : (
-          <div className="absolute top-8 right-10 text-2xl font-black text-[#a34063] animate-bounce">
+          <div className="absolute top-8 right-10 text-3xl font-black text-[#a34063] animate-bounce">
             zZz...
           </div>
         )}
