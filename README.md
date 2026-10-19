@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🌙 Pip the Skull Baby — "Midnight Nursery" Portfolio OS
 
-## Getting Started
+> *"I build the dreams you fall asleep inside."*
 
-First, run the development server:
+Welcome to the official **Tier-3 Competitive Portfolio** for **Pip the Skull Baby**, built for the **haX.baby Hackathon (Track 1)**. This project is a feature-rich, high-polish Next.js web application engineered around a cozy **"Midnight Nursery"** editorial design aesthetic.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎨 Design Philosophy & Visual Identity
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+The interface fuses 90s early-web whimsy with an editorial serif palette, soft glassmorphism, and cozy pastel tones:
+* **Background Canvas:** Soft cream (`#fff8f1`) shifting seamlessly into Midnight Plum (`#1c121e`) during Night Shift.
+* **Primary Accents:** Deep Berry (`#a34063`), Rose Pink, and Glowing Amber (`#fde047`).
+* **Typography:** Bold editorial serif headers paired with crisp, highly legible sans-serif body text.
+* **Motifs:** Custom cloud header borders, starry nightcaps, soft floating badges, and glowing ember lanterns.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📜 Canon Character Lore & Identity
 
-To learn more about Next.js, take a look at the following resources:
+* **Name:** Pip
+* **Species:** A gentle, cute skull baby wearing cozy heart-patterned pajamas, a star-patterned nightcap, and a pink ribbon bow.
+* **Look:** Smooth round skull face, soft eye sockets with warm glowing amber pinpricks, and a sweet crooked smile. *(100% friendly, never scary, creepy, or gory!)*
+* **Personality:** Curious, sleepy, a little clumsy, easily delighted. Giggles at soft sounds and hates silence.
+* **Profession:** **Junior Dream Engineer @ Midnight Nursery** — Pip designs the dreams, lullabies, nightlights, and bedtime stories that help the neighborhood's little ghosts and creatures fall asleep.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ✨ Core Interactive Features & Problem Statement Coverage
 
-## Deploy on Vercel
+### 1. What They Are (Identity & Quirks)
+* **Eye-Tracking Pupil Engine:** Pip's glowing amber pupils continuously track the visitor's cursor across the screen using smooth trigonometric math (`Math.atan2` angle and hypotenuse distance capping).
+* **Pip's Sitting Stage:** An animated sitting portrait resting on a cloud cushion, holding a dimmable bedside lantern and lullaby music box.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. What They Do (Inventions & Works Showcase)
+* **The Lullaby Lab:** An interactive Web Audio API synthesizer that plays gentle pentatonic chimes (Notes A, C, E) with a single click.
+* **Dimmable Dream Lantern:** A dynamic range slider that real-time controls the radial box-shadow brightness and glow opacity of Pip's bedside lantern.
+* **Starlight Dream Routes:** Interactive flight delivery maps used to drop custom dreams across rooftops.
+* **Rattle & Block Toys:** Interactive click/stack sound toys invented for nursery creatures.
+* **Bedtime Storybook:** Illustrated bedtime tales written and illustrated by Pip.
+* **Pip's Growth Chart:** A vertical nursery wall height chart tracking Pip's skill progression from birth to Junior Dream Engineer.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. What Their Story Is (Scroll-Driven Journey)
+* **About & Origin Story Modal:** A dedicated, full-screen scroll-driven modal with gradient scene transitions (*Scene 1: Starlight Nursery Birth*, *Scene 2: Crafting Bedtime Chimes*, *Scene 3: Official Dream Engineer*).
+* **World & Neighborhood Lore:** Details on Starlight Nursery, Whispering Woods, and supporting creatures like Barnaby the Bear Cub, Hootie the Owl, and friendly nursery ghosts.
+
+### 4. Immersion & Audio-Visual Polish
+* **60-Second Auto Day/Night Loop:** An automated background timer tracks site stay time. Every 60 seconds, it triggers a 1-minute **Night Shift** where Pip falls asleep (`zZz` floating animation, dimmed UI, and dark plum palette), followed by a morning wake-up cycle.
+* **Animated Mode Banners:** Mode transitions trigger animated pop-up notification cards with custom icons and greetings (*"🌙 Night Shift Activated! Pip is sleeping for 1min..."*).
+* **Floating Sleepiness Bar:** A semi-transparent vertical glassmorphism progress bar docked on the right side of the screen displaying real-time countdown to the next sleep shift.
+* **Star Trail Cursor:** Custom cursor particle overlay emitting sparkling stars (`✨`, `⭐`, `🌸`, `🌙`) following user movement.
+* **Web Audio Synthesizer:** Pure Web Audio API sine-wave sound generator driving UI sound effects, eliminating external MP3 dependencies. Includes an accessible header **Mute Switch**.
+
+### 5. Hidden Easter Eggs
+* **Confetti Ribbon:** Tapping Pip's nightcap bow triggers a multi-colored particle blast.
+* **Interactive Crackable Egg (Bottom-Left):** A large pastel egg sitting on the bottom-left of the viewport. Visitors can click the egg 3 times to crack the shell, playing escalating audio pitches and exploding into a full-screen starburst celebration!
+
+### 6. Live Persistence Backend (MongoDB)
+* **Live Visitor Guestbook:** Integrated Next.js API routes coupled with MongoDB persistence allow visitors to sign notes that remain visible to all future travelers in real-time.
+
+---
+
+## 📂 File Architecture & Functionality Breakdown
+
+```text
+babys-portfolio/
+├── lib/
+│   └── mongodb.js               # Global MongoDB Client Promise helper for connection pooling
+├── app/
+│   ├── layout.js                # Root application layout wrapper
+│   ├── page.js                  # Main orchestrator & parent state container
+│   ├── api/
+│   │   └── guestbook/
+│   │       └── route.js         # GET (fetch notes) & POST (save note) REST API handlers
+│   ├── components/
+│   │   ├── StarTrail.jsx        # Cursor sparkle particle emitter overlay
+│   │   └── ConstellationCanvas.jsx # Interactive star-connecting canvas toy
+│   └── sections/
+│       ├── Navbar.jsx           # Top header bar with Mute & Day/Night manual switches
+│       ├── Sidebar.jsx          # Fixed left cylinder navigation bar with quick pop-up triggers
+│       ├── MainStage.jsx        # Primary hero container with eye-tracking, sitting Pip, & sleep bar
+│       ├── ChatModal.jsx        # Fixed 3-option Q&A dialogue system in Pip's exact character voice
+│       ├── InventionsModal.jsx  # Interactive Lullaby Synthesizer & Dimmable Lantern controls
+│       ├── PortfolioModal.jsx   # 6-project canon portfolio & nursery growth chart
+│       ├── StoryModal.jsx       # Origin story, world lore, & visual art style summary
+│       ├── GuestbookModal.jsx   # MongoDB live sign wall & note submission form
+│       ├── AboutStoryModal.jsx  # Scroll-driven origin journey modal with gradient scene cards
+│       └── EggEasterEgg.jsx     # Crackable surprise egg component with confetti blast
