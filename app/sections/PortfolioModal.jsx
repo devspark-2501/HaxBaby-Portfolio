@@ -1,23 +1,22 @@
 'use client';
 
 import React from 'react';
-import { Briefcase, X, Cloud } from 'lucide-react';
+import { Briefcase, X, Cloud, Ruler } from 'lucide-react';
+import ConstellationCanvas from '../components/ConstellationCanvas';
 
-export default function PortfolioModal({ onClose }) {
-  const projects = [
-    { title: "1. The Lullaby Lab", desc: "A music box or generative soothing lullaby that Pip composed." },
-    { title: "2. Nightlight Collection", desc: "A gallery of glowing lamps and bedside lanterns Pip designed." },
-    { title: "3. Dream Delivery Routes", desc: "The interactive map Pip uses to fly across rooftops delivering dreams." },
-    { title: "4. Rattle & Block Toys", desc: "Playable, interactive toys Pip invented that visitors can click or stack." },
-    { title: "5. Bedtime Storybook", desc: "A cozy bedtime story Pip wrote and illustrated." },
-    { title: "6. Pip's Growth Chart", desc: "Pip's skills shown as a baby height growth-chart on a nursery wall." }
+export default function PortfolioModal({ onClose, playPop }) {
+  const growthChart = [
+    { height: "12 cm", milestone: "0 Months: Born in Midnight Nursery", note: "Discovered glowing amber eyes" },
+    { height: "20 cm", milestone: "3 Months: First Lullaby Box Built", note: "Composed pentatonic sleep chimes" },
+    { height: "28 cm", milestone: "6 Months: Mastered Dream Lanterns", note: "Created dimmable warm nightlights" },
+    { height: "35 cm", milestone: "12 Months: Junior Dream Engineer!", note: "Flies rooftop routes nightly" }
   ];
 
   return (
     <div className="fixed top-0 right-0 h-screen w-full sm:w-[85vw] md:w-[70vw] lg:w-[55vw] pl-6 pb-6 pt-4 pr-0 z-50 pointer-events-none flex justify-end">
-      <div className="bg-[#fff8f1] h-full w-full rounded-l-3xl border-l-4 border-y-4 border-[#a34063] p-8 shadow-2xl relative text-left overflow-y-auto pointer-events-auto">
+      <div className="bg-[#fff8f1] h-full w-full rounded-l-3xl border-l-4 border-y-4 border-[#a34063] p-8 shadow-2xl relative text-left overflow-y-auto pointer-events-auto space-y-6">
         
-        <div className="flex items-center justify-between pb-4 border-b border-[#a34063]/20 mb-6">
+        <div className="flex items-center justify-between pb-4 border-b border-[#a34063]/20">
           <div className="flex items-center gap-2">
             <Cloud className="w-6 h-6 text-[#a34063] fill-[#a34063]/20" />
             <h3 className="font-serif text-2xl font-bold text-[#a34063]">
@@ -29,14 +28,25 @@ export default function PortfolioModal({ onClose }) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-          {projects.map((p, idx) => (
-            <div key={idx} className="p-4 bg-white rounded-2xl border border-[#a34063]/20 shadow-xs">
-              <h4 className="font-bold text-[#a34063] mb-1.5">{p.title}</h4>
-              <p className="opacity-80 leading-relaxed">{p.desc}</p>
-            </div>
-          ))}
-        </div>
+        {/* Nursery Wall Growth Chart */}
+        <section className="p-4 bg-white rounded-2xl border-2 border-[#a34063]/20 shadow-xs">
+          <div className="flex items-center gap-2 text-[#a34063] mb-3">
+            <Ruler className="w-5 h-5" />
+            <h4 className="font-serif font-bold text-base">Pip's Growth Height Chart</h4>
+          </div>
+
+          <div className="space-y-2 border-l-4 border-[#a34063]/40 pl-3">
+            {growthChart.map((g, idx) => (
+              <div key={idx} className="text-xs">
+                <span className="font-bold text-[#a34063]">{g.height}</span> — <span className="font-semibold">{g.milestone}</span>
+                <p className="text-[10px] opacity-75">{g.note}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Constellation Mini-Toy Canvas */}
+        <ConstellationCanvas playPop={playPop} />
 
       </div>
     </div>
