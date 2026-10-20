@@ -5,6 +5,7 @@ export const metadata = {
   description: "Official Track 1 portfolio for Pip the Skull Baby, Junior Dream Engineer at Midnight Nursery.",
 };
 
+// code!
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
