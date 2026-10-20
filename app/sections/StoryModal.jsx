@@ -12,7 +12,7 @@ export default function StoryModal({ onClose }) {
           <div className="flex items-center gap-2">
             <Cloud className="w-6 h-6 text-[#a34063] fill-[#a34063]/20" />
             <h3 className="font-serif text-2xl font-bold text-[#a34063]">
-              Pip's Origin & World
+              Pip's Origin & World!
             </h3>
           </div>
           <button onClick={onClose} className="text-[#a34063] font-bold p-1 rounded-full hover:bg-[#a34063]/10">
